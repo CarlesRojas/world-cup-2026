@@ -35,37 +35,57 @@ function statusFor(person: string, matchId: number): Status {
  */
 export default function PredictionBracket({ person }: { person: string }) {
   return (
-    <div className="no-scrollbar overflow-x-auto pb-2">
-      <div className="flex min-w-max gap-3">
-        {ROUND_ORDER.map((round) => {
-          const matches = MATCHES.filter((m) => m.round === round);
-          return (
-            <div key={round} className="flex w-36 flex-col">
-              <div className="mb-2 px-1">
-                <div className="text-xs font-semibold text-ink">
-                  {ROUND_LABEL[round]}
+    <div>
+      <div className="no-scrollbar overflow-x-auto pb-2">
+        {/* Columns grow to fill the width on desktop; on narrow screens the
+            min-width kicks in and the row scrolls horizontally. */}
+        <div className="flex gap-2 sm:gap-3">
+          {ROUND_ORDER.map((round) => {
+            const matches = MATCHES.filter((m) => m.round === round);
+            // The Round of 32 is grouped into the pairs whose winners meet in
+            // the next round, so it's clear which two matches feed each tie.
+            const groups =
+              round === "R32" ? chunkPairs(matches) : matches.map((m) => [m]);
+            return (
+              <div key={round} className="flex min-w-[8.5rem] flex-1 flex-col">
+                <div className="mb-2 px-1">
+                  <div className="text-xs font-semibold text-ink">
+                    {ROUND_LABEL[round]}
+                  </div>
+                  <div className="text-[11px] text-ink-faint">
+                    {ROUND_POINTS[round]}{" "}
+                    {ROUND_POINTS[round] === 1 ? "pt" : "pts"}
+                  </div>
                 </div>
-                <div className="text-[11px] text-ink-faint">
-                  {ROUND_POINTS[round]} {ROUND_POINTS[round] === 1 ? "pt" : "pts"}
+                <div className="flex flex-1 flex-col justify-around gap-3">
+                  {groups.map((group, i) => (
+                    <div key={i} className="flex flex-col gap-1.5">
+                      {group.map((m) => (
+                        <PickCell
+                          key={m.id}
+                          team={pickFor(person, m.id)}
+                          status={statusFor(person, m.id)}
+                        />
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="flex flex-1 flex-col justify-around gap-2">
-                {matches.map((m) => (
-                  <PickCell
-                    key={m.id}
-                    team={pickFor(person, m.id)}
-                    status={statusFor(person, m.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <Legend />
     </div>
   );
+}
+
+/** Split a list into consecutive pairs: [a,b,c,d] -> [[a,b],[c,d]]. */
+function chunkPairs<T>(arr: T[]): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += 2) out.push(arr.slice(i, i + 2));
+  return out;
 }
 
 function PickCell({ team, status }: { team: string; status: Status }) {
