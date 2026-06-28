@@ -21,8 +21,9 @@ export interface MatchCardData {
 /**
  * One match: header (round · date · points), the two teams side by side with a
  * "vs" in the middle (flag on top, name underneath), and the points-at-risk
- * split into one column per team. The card grows as tall as needed — the page
- * scrolls, the card never does.
+ * split into one column per confirmed participant. The card is an elevated
+ * surface (no border) and grows as tall as needed — the page scrolls, the card
+ * never does.
  */
 export default function MatchCard({
   data,
@@ -31,11 +32,12 @@ export default function MatchCard({
   data: MatchCardData;
   focused: boolean;
 }) {
-  const { teamA, teamB, decided, winner } = data;
+  const { teamA, teamB, decided, winner, groups } = data;
+  const anyRisk = groups.some((g) => g.entries.length > 0);
   return (
     <article
-      className={`flex w-[86vw] max-w-[380px] shrink-0 snap-center flex-col self-start overflow-hidden rounded-2xl border bg-white transition ${
-        focused ? "border-ink shadow-sm" : "border-line"
+      className={`flex w-[86vw] max-w-[380px] shrink-0 snap-center flex-col self-start overflow-hidden rounded-2xl bg-surface transition ${
+        focused ? "shadow-lg ring-1 ring-ink/10" : "shadow-sm"
       }`}
     >
       <header className="flex items-start justify-between gap-2 px-5 pt-4">
@@ -43,7 +45,7 @@ export default function MatchCard({
           <div className="font-semibold text-ink">{data.roundLabel}</div>
           <div className="mt-0.5 text-ink-muted">{data.dateLabel}</div>
         </div>
-        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-ink-muted">
+        <span className="shrink-0 rounded-full bg-line px-2 py-0.5 text-xs font-semibold text-ink-muted">
           {data.points} {data.points === 1 ? "pt" : "pts"}
         </span>
       </header>
@@ -62,17 +64,21 @@ export default function MatchCard({
             <Flag team={winner} width={18} height={12} />
             Guanya <span className="font-semibold text-ink">{winner}</span>
           </p>
-        ) : data.groups.every((g) => g.entries.length === 0) ? (
+        ) : groups.length === 0 ? (
+          <p className="text-center text-sm text-ink-faint">
+            Encara no se saben els equips.
+          </p>
+        ) : !anyRisk ? (
           <p className="text-center text-sm text-ink-faint">
             Ningú té punts en joc aquí.
           </p>
         ) : (
           <>
             <div className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-              Punts en joc
+              Punts perduts si perd:
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              {data.groups.slice(0, 2).map((g) => (
+              {groups.slice(0, 2).map((g) => (
                 <RiskColumn key={g.team} group={g} />
               ))}
             </div>
@@ -102,7 +108,7 @@ function RiskColumn({ group }: { group: RiskGroupData }) {
               className="flex items-center justify-between gap-2 text-sm"
             >
               <span className="truncate text-ink-muted">{e.person}</span>
-              <span className="shrink-0 font-semibold tabular-nums text-rose-600">
+              <span className="shrink-0 font-semibold tabular-nums text-rose-600 dark:text-rose-400">
                 −{e.risk}
               </span>
             </li>

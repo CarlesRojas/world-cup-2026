@@ -64,7 +64,7 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
                   <span
                     className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
                       sortBy === "current"
-                        ? "bg-ink text-white"
+                        ? "bg-ink text-bg"
                         : "text-ink"
                     }`}
                   >
@@ -75,7 +75,7 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
                   <span
                     className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
                       sortBy === "potential"
-                        ? "bg-ink text-white"
+                        ? "bg-ink text-bg"
                         : "text-ink-muted"
                     }`}
                   >
@@ -135,7 +135,7 @@ function Segmented({
           onClick={() => onChange(o.key)}
           className={`rounded-md px-3 py-1.5 font-medium transition ${
             sortBy === o.key
-              ? "bg-ink text-white"
+              ? "bg-ink text-bg"
               : "text-ink-muted hover:text-ink"
           }`}
         >

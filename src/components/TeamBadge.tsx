@@ -20,7 +20,7 @@ export function Flag({
   if (!code) {
     return (
       <span
-        className={`inline-block rounded bg-zinc-100 ring-1 ring-line ${className}`}
+        className={`inline-block rounded bg-line ring-1 ring-line ${className}`}
         style={{ width, height: h }}
       />
     );

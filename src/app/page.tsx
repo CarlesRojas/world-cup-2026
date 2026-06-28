@@ -1,5 +1,6 @@
 import RankingTable from "@/components/RankingTable";
 import RiskCarousel from "@/components/RiskCarousel";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { MatchCardData } from "@/components/MatchCard";
 import { RESULTS } from "@/data/results";
 import { ROUND_LABEL, ROUND_POINTS, type Match } from "@/data/bracket";
@@ -52,7 +53,11 @@ export default function Home() {
   const decidedCount = ordered.filter((m) => isDecided(m.id, RESULTS)).length;
 
   return (
-    <main className="py-10 sm:py-14">
+    <main className="py-6 sm:py-10">
+      <div className="mx-auto flex max-w-2xl justify-end px-5">
+        <ThemeToggle />
+      </div>
+
       <header className="mx-auto mb-12 max-w-2xl px-5 text-center">
         <p className="text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
           Mundial 2026 · Eliminatòries

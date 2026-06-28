@@ -200,30 +200,31 @@ export interface RiskGroup {
 }
 
 /**
- * Risk for a match, split into one group per team a person picked.
+ * Risk for a match, split into one group per CONFIRMED participant.
  *
- * The two participants of the match come first (in slot order) so the card can
- * show one team on the left and the other on the right. Groups are returned for
- * the two known participants even if empty, so both sides always render. Any
- * other picked teams (possible when participants aren't decided yet) follow.
+ * A side only appears once we actually know who plays there (an R32 fixture, or
+ * a later round whose feeder result has been recorded). Until then that side
+ * contributes no group — so undecided matches show no points at risk. As soon
+ * as a team is slotted in, it appears here with the people who picked it to win
+ * this match and how many points each would lose. Slot order (left, then right)
+ * is preserved so the card can render the two sides in the same order as the
+ * teams above.
  */
 export function risksByTeam(m: Match, results: Results): RiskGroup[] {
-  const all = risksForMatch(m.id, results);
-  const byTeam = new Map<string, { person: string; risk: number }[]>();
-  for (const e of all) {
-    if (!byTeam.has(e.pick)) byTeam.set(e.pick, []);
-    byTeam.get(e.pick)!.push({ person: e.person, risk: e.risk });
+  const groups: RiskGroup[] = [];
+  for (const team of matchParticipants(m, results)) {
+    if (!team) continue; // participant not yet known — nothing to show
+    const entries = PEOPLE.filter((p) => pickFor(p, m.id) === team)
+      .map((p) => ({ person: p, risk: pointsAtRisk(p, m.id, results) }))
+      .filter((e) => e.risk > 0)
+      .sort((x, y) => y.risk - x.risk || x.person.localeCompare(y.person, "ca"));
+    groups.push({
+      team,
+      total: entries.reduce((s, e) => s + e.risk, 0),
+      entries,
+    });
   }
-  const [a, b] = matchParticipants(m, results);
-  const ordered: string[] = [];
-  for (const t of [a, b]) if (t && !ordered.includes(t)) ordered.push(t);
-  for (const t of byTeam.keys()) if (!ordered.includes(t)) ordered.push(t);
-  return ordered.map((team) => {
-    const entries = (byTeam.get(team) ?? []).sort(
-      (x, y) => y.risk - x.risk || x.person.localeCompare(y.person, "ca"),
-    );
-    return { team, total: entries.reduce((s, e) => s + e.risk, 0), entries };
-  });
+  return groups;
 }
 
 /** Resolve who actually plays in a slot (team name) given recorded results. */
