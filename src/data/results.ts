@@ -19,7 +19,7 @@ export const RESULTS: Results = {
   // ----- Setzens de final (Round of 32, 1 pt) -----
   // 1:  "Alemanya",       // Alemanya vs Paraguai
   // 2:  "França",         // França vs Suècia
-  // 3:  "Canadà",         // Sudàfrica vs Canadà
+  3:  "Canadà",         // Sudàfrica vs Canadà
   // 4:  "Països Baixos",  // Països Baixos vs Marroc
   // 5:  "Portugal",       // Portugal vs Croàcia
   // 6:  "Espanya",        // Espanya vs Àustria
