@@ -193,6 +193,40 @@ export function risksForMatch(matchId: number, results: Results): RiskEntry[] {
     .sort((a, b) => b.risk - a.risk || a.person.localeCompare(b.person, "ca"));
 }
 
+export interface RiskGroup {
+  team: string;
+  total: number;
+  entries: { person: string; risk: number }[];
+}
+
+/**
+ * Risk for a match, split into one group per CONFIRMED participant.
+ *
+ * A side only appears once we actually know who plays there (an R32 fixture, or
+ * a later round whose feeder result has been recorded). Until then that side
+ * contributes no group — so undecided matches show no points at risk. As soon
+ * as a team is slotted in, it appears here with the people who picked it to win
+ * this match and how many points each would lose. Slot order (left, then right)
+ * is preserved so the card can render the two sides in the same order as the
+ * teams above.
+ */
+export function risksByTeam(m: Match, results: Results): RiskGroup[] {
+  const groups: RiskGroup[] = [];
+  for (const team of matchParticipants(m, results)) {
+    if (!team) continue; // participant not yet known — nothing to show
+    const entries = PEOPLE.filter((p) => pickFor(p, m.id) === team)
+      .map((p) => ({ person: p, risk: pointsAtRisk(p, m.id, results) }))
+      .filter((e) => e.risk > 0)
+      .sort((x, y) => y.risk - x.risk || x.person.localeCompare(y.person, "ca"));
+    groups.push({
+      team,
+      total: entries.reduce((s, e) => s + e.risk, 0),
+      entries,
+    });
+  }
+  return groups;
+}
+
 /** Resolve who actually plays in a slot (team name) given recorded results. */
 export function resolveSlot(slot: Slot, results: Results): string | null {
   if ("team" in slot) return slot.team;

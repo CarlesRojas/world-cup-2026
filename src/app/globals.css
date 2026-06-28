@@ -4,6 +4,24 @@
 
 :root {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Light theme — white page, slightly grey elevated surfaces. */
+  --bg: 255 255 255;
+  --surface: 244 244 245; /* zinc-100 */
+  --line: 228 228 231; /* zinc-200 */
+  --ink: 10 10 10;
+  --ink-muted: 82 82 91; /* zinc-600 */
+  --ink-faint: 161 161 170; /* zinc-400 */
+}
+
+.dark {
+  /* Dark theme — near-black page, slightly lighter elevated surfaces. */
+  --bg: 9 9 11; /* zinc-950 */
+  --surface: 24 24 27; /* zinc-900 */
+  --line: 39 39 42; /* zinc-800 */
+  --ink: 250 250 250;
+  --ink-muted: 161 161 170; /* zinc-400 */
+  --ink-faint: 113 113 122; /* zinc-500 */
 }
 
 html,
@@ -13,12 +31,11 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #15452b 0%, transparent 60%),
-    linear-gradient(180deg, #0a1f14 0%, #07150d 100%);
-  background-attachment: fixed;
-  color: #f3f6f4;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Hide scrollbars on the horizontal carousel while keeping it scrollable */
