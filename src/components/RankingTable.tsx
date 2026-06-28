@@ -4,32 +4,43 @@ import { useState } from "react";
 import type { RankingRow } from "@/lib/scoring";
 
 type SortKey = "current" | "potential";
+type SortDir = "asc" | "desc";
 
 /**
  * Ranking: Name · Current points · Potential points.
- * A segmented control switches the sort between current and potential points.
- * Both point columns are centered.
+ * Click a point column to sort by it; click it again to flip the direction.
+ * The active column shows a chevron pointing the way it's sorted.
  */
 export default function RankingTable({ rows }: { rows: RankingRow[] }) {
   const [sortBy, setSortBy] = useState<SortKey>("current");
+  const [dir, setDir] = useState<SortDir>("desc");
+
+  function sortByColumn(key: SortKey) {
+    if (key === sortBy) {
+      setDir((d) => (d === "desc" ? "asc" : "desc"));
+    } else {
+      setSortBy(key);
+      setDir("desc");
+    }
+  }
 
   const sorted = [...rows].sort((a, b) => {
     const other: SortKey = sortBy === "current" ? "potential" : "current";
-    return (
-      b[sortBy] - a[sortBy] ||
-      b[other] - a[other] ||
-      a.person.localeCompare(b.person, "ca")
-    );
+    const base = a[sortBy] - b[sortBy] || a[other] - b[other];
+    if (base !== 0) return dir === "desc" ? -base : base;
+    return a.person.localeCompare(b.person, "ca");
   });
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold tracking-tight text-ink">
-          Classificació
-        </h2>
-        <Segmented sortBy={sortBy} onChange={setSortBy} />
-      </div>
+      <h2 className="text-lg font-semibold tracking-tight text-ink">
+        Classificació
+      </h2>
+      <p className="mb-4 mt-1 text-sm text-ink-muted">
+        <span className="font-medium text-ink">Actuals</span>: punts que ja has
+        guanyat. <span className="font-medium text-ink">Potencials</span>: el
+        màxim que encara pots arribar a fer si tots els teus equips vius guanyen.
+      </p>
 
       <div className="overflow-hidden rounded-xl border border-line">
         <table className="w-full border-collapse text-sm">
@@ -40,12 +51,14 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
               <SortHeader
                 label="Actuals"
                 active={sortBy === "current"}
-                onClick={() => setSortBy("current")}
+                dir={dir}
+                onClick={() => sortByColumn("current")}
               />
               <SortHeader
                 label="Potencials"
                 active={sortBy === "potential"}
-                onClick={() => setSortBy("potential")}
+                dir={dir}
+                onClick={() => sortByColumn("potential")}
                 rightPad
               />
             </tr>
@@ -63,9 +76,7 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
                 <td className="py-3 px-2 text-center">
                   <span
                     className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
-                      sortBy === "current"
-                        ? "bg-ink text-bg"
-                        : "text-ink"
+                      sortBy === "current" ? "bg-ink text-bg" : "text-ink"
                     }`}
                   >
                     {r.current}
@@ -74,9 +85,7 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
                 <td className="py-3 pr-4 pl-2 text-center">
                   <span
                     className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
-                      sortBy === "potential"
-                        ? "bg-ink text-bg"
-                        : "text-ink-muted"
+                      sortBy === "potential" ? "bg-ink text-bg" : "text-ink-muted"
                     }`}
                   >
                     {r.potential}
@@ -94,11 +103,13 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
 function SortHeader({
   label,
   active,
+  dir,
   onClick,
   rightPad = false,
 }: {
   label: string;
   active: boolean;
+  dir: SortDir;
   onClick: () => void;
   rightPad?: boolean;
 }) {
@@ -106,42 +117,36 @@ function SortHeader({
     <th className={`py-3 px-2 text-center font-medium ${rightPad ? "pr-4" : ""}`}>
       <button
         onClick={onClick}
-        className={`uppercase tracking-wide transition ${
+        className={`inline-flex items-center gap-1 uppercase tracking-wide transition ${
           active ? "text-ink" : "text-ink-faint hover:text-ink-muted"
         }`}
       >
         {label}
+        <Chevron
+          className={`transition ${active ? "opacity-100" : "opacity-0"} ${
+            active && dir === "asc" ? "rotate-180" : ""
+          }`}
+        />
       </button>
     </th>
   );
 }
 
-function Segmented({
-  sortBy,
-  onChange,
-}: {
-  sortBy: SortKey;
-  onChange: (k: SortKey) => void;
-}) {
-  const opts: { key: SortKey; label: string }[] = [
-    { key: "current", label: "Actuals" },
-    { key: "potential", label: "Potencials" },
-  ];
+function Chevron({ className = "" }: { className?: string }) {
   return (
-    <div className="inline-flex rounded-lg border border-line p-0.5 text-xs">
-      {opts.map((o) => (
-        <button
-          key={o.key}
-          onClick={() => onChange(o.key)}
-          className={`rounded-md px-3 py-1.5 font-medium transition ${
-            sortBy === o.key
-              ? "bg-ink text-bg"
-              : "text-ink-muted hover:text-ink"
-          }`}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
   );
 }

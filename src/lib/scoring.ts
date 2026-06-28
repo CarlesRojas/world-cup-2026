@@ -146,6 +146,27 @@ export function pointsAtRisk(person: string, matchId: number, results: Results):
   return risk;
 }
 
+/**
+ * POINTS AT STAKE for a person on a match — what hinged on this match's result.
+ *
+ * Identical to pointsAtRisk, except it ALWAYS counts this match's own points,
+ * even after it has been played. That lets a decided card keep showing the
+ * stakes: the people who backed the loser see what they lost, the people who
+ * backed the winner see what they kept. Downstream matches are still only
+ * counted while undecided (those are settled on their own cards).
+ */
+export function pointsAtStake(person: string, matchId: number, results: Results): number {
+  const team = pickFor(person, matchId);
+  let total = 0;
+  for (const downstreamId of getMatchPath(matchId)) {
+    if (downstreamId !== matchId && isDecided(downstreamId, results)) continue;
+    if (pickFor(person, downstreamId) === team) {
+      total += matchPoints(MATCH_BY_ID[downstreamId]);
+    }
+  }
+  return total;
+}
+
 // ---------------------------------------------------------------------------
 //  Aggregations for the UI
 // ---------------------------------------------------------------------------
@@ -215,7 +236,7 @@ export function risksByTeam(m: Match, results: Results): RiskGroup[] {
   for (const team of matchParticipants(m, results)) {
     if (!team) continue; // participant not yet known — nothing to show
     const entries = PEOPLE.filter((p) => pickFor(p, m.id) === team)
-      .map((p) => ({ person: p, risk: pointsAtRisk(p, m.id, results) }))
+      .map((p) => ({ person: p, risk: pointsAtStake(p, m.id, results) }))
       .filter((e) => e.risk > 0)
       .sort((x, y) => y.risk - x.risk || x.person.localeCompare(y.person, "ca"));
     groups.push({

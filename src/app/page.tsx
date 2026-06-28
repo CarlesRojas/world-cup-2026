@@ -72,11 +72,6 @@ export default function Home() {
 
       <section className="mx-auto mb-14 max-w-2xl px-5">
         <RankingTable rows={ranking} />
-        <p className="mt-3 text-xs text-ink-faint">
-          <span className="font-medium text-ink-muted">Actuals</span>: punts ja
-          guanyats. <span className="font-medium text-ink-muted">Potencials</span>
-          : màxim que encara es pot assolir (descomptant equips eliminats).
-        </p>
       </section>
 
       <section>
