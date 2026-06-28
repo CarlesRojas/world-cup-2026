@@ -38,13 +38,12 @@ export default function MatchCard({
         focused ? "border-ink shadow-sm" : "border-line"
       }`}
     >
-      <header className="flex items-center justify-between gap-2 px-5 pt-4">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="font-semibold text-ink">{data.roundLabel}</span>
-          <span className="text-ink-faint">·</span>
-          <span className="text-ink-muted">{data.dateLabel}</span>
+      <header className="flex items-start justify-between gap-2 px-5 pt-4">
+        <div className="min-w-0 text-xs">
+          <div className="font-semibold text-ink">{data.roundLabel}</div>
+          <div className="mt-0.5 text-ink-muted">{data.dateLabel}</div>
         </div>
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-ink-muted">
+        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-ink-muted">
           {data.points} {data.points === 1 ? "pt" : "pts"}
         </span>
       </header>

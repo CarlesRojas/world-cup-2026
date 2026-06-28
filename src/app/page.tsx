@@ -16,12 +16,16 @@ import {
 // Recompute statically; editing results.ts + redeploy reflects new results.
 export const dynamic = "force-static";
 
+// Kickoff shown in Spain/Catalonia time, e.g. "dg. 28 jun. · 21:00".
 function formatDate(iso: string): string {
-  const d = new Date(iso + "T00:00:00");
+  const d = new Date(iso);
   return new Intl.DateTimeFormat("ca-ES", {
     weekday: "short",
     day: "numeric",
     month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Madrid",
   }).format(d);
 }
 
