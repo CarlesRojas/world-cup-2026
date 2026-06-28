@@ -63,29 +63,30 @@ export const MATCHES: Match[] = [
   { id: 16, round: "R32", date: "2026-07-04T01:30:00Z", slotA: { team: "Colòmbia" }, slotB: { team: "Ghana" } },
 
   // ---- Round of 16 (matches 17-24, 2 pts) ----
-  // From R16 onward participants depend on results; kickoff times here are
-  // representative slots within the real FIFA matchday windows (4–7 July).
-  { id: 17, round: "R16", date: "2026-07-04T17:00:00Z", slotA: { winnerOf: 1 }, slotB: { winnerOf: 2 } },
-  { id: 18, round: "R16", date: "2026-07-04T21:00:00Z", slotA: { winnerOf: 3 }, slotB: { winnerOf: 4 } },
-  { id: 19, round: "R16", date: "2026-07-05T17:00:00Z", slotA: { winnerOf: 5 }, slotB: { winnerOf: 6 } },
-  { id: 20, round: "R16", date: "2026-07-05T21:00:00Z", slotA: { winnerOf: 7 }, slotB: { winnerOf: 8 } },
-  { id: 21, round: "R16", date: "2026-07-06T17:00:00Z", slotA: { winnerOf: 9 }, slotB: { winnerOf: 10 } },
-  { id: 22, round: "R16", date: "2026-07-06T21:00:00Z", slotA: { winnerOf: 11 }, slotB: { winnerOf: 12 } },
-  { id: 23, round: "R16", date: "2026-07-07T17:00:00Z", slotA: { winnerOf: 13 }, slotB: { winnerOf: 14 } },
-  { id: 24, round: "R16", date: "2026-07-07T21:00:00Z", slotA: { winnerOf: 15 }, slotB: { winnerOf: 16 } },
+  // The porra bracket wiring matches the real FIFA bracket exactly, so each of
+  // these slots has a fixed real date/venue regardless of who advances. Dates
+  // are the real kickoffs (UTC). FIFA match number in brackets.
+  { id: 17, round: "R16", date: "2026-07-04T21:00:00Z", slotA: { winnerOf: 1 }, slotB: { winnerOf: 2 } },  // #89, Philadelphia
+  { id: 18, round: "R16", date: "2026-07-04T17:00:00Z", slotA: { winnerOf: 3 }, slotB: { winnerOf: 4 } },  // #90, Houston
+  { id: 19, round: "R16", date: "2026-07-06T19:00:00Z", slotA: { winnerOf: 5 }, slotB: { winnerOf: 6 } },  // #93, Dallas
+  { id: 20, round: "R16", date: "2026-07-07T00:00:00Z", slotA: { winnerOf: 7 }, slotB: { winnerOf: 8 } },  // #94, Seattle
+  { id: 21, round: "R16", date: "2026-07-05T20:00:00Z", slotA: { winnerOf: 9 }, slotB: { winnerOf: 10 } }, // #91, New York/New Jersey
+  { id: 22, round: "R16", date: "2026-07-06T00:00:00Z", slotA: { winnerOf: 11 }, slotB: { winnerOf: 12 } }, // #92, Mexico City
+  { id: 23, round: "R16", date: "2026-07-07T16:00:00Z", slotA: { winnerOf: 13 }, slotB: { winnerOf: 14 } }, // #95, Atlanta
+  { id: 24, round: "R16", date: "2026-07-07T20:00:00Z", slotA: { winnerOf: 15 }, slotB: { winnerOf: 16 } }, // #96, Vancouver
 
   // ---- Quarterfinals (matches 25-28, 4 pts) ----
-  { id: 25, round: "QF", date: "2026-07-09T20:00:00Z", slotA: { winnerOf: 17 }, slotB: { winnerOf: 18 } },
-  { id: 26, round: "QF", date: "2026-07-10T17:00:00Z", slotA: { winnerOf: 19 }, slotB: { winnerOf: 20 } },
-  { id: 27, round: "QF", date: "2026-07-10T21:00:00Z", slotA: { winnerOf: 21 }, slotB: { winnerOf: 22 } },
-  { id: 28, round: "QF", date: "2026-07-11T20:00:00Z", slotA: { winnerOf: 23 }, slotB: { winnerOf: 24 } },
+  { id: 25, round: "QF", date: "2026-07-09T20:00:00Z", slotA: { winnerOf: 17 }, slotB: { winnerOf: 18 } }, // #97, Boston
+  { id: 26, round: "QF", date: "2026-07-10T19:00:00Z", slotA: { winnerOf: 19 }, slotB: { winnerOf: 20 } }, // #98, Los Angeles
+  { id: 27, round: "QF", date: "2026-07-11T21:00:00Z", slotA: { winnerOf: 21 }, slotB: { winnerOf: 22 } }, // #99, Miami
+  { id: 28, round: "QF", date: "2026-07-12T01:00:00Z", slotA: { winnerOf: 23 }, slotB: { winnerOf: 24 } }, // #100, Kansas City
 
   // ---- Semifinals (matches 29-30, 8 pts) ----
-  { id: 29, round: "SF", date: "2026-07-14T20:00:00Z", slotA: { winnerOf: 25 }, slotB: { winnerOf: 26 } },
-  { id: 30, round: "SF", date: "2026-07-15T20:00:00Z", slotA: { winnerOf: 27 }, slotB: { winnerOf: 28 } },
+  { id: 29, round: "SF", date: "2026-07-14T19:00:00Z", slotA: { winnerOf: 25 }, slotB: { winnerOf: 26 } }, // #101, Arlington (Dallas)
+  { id: 30, round: "SF", date: "2026-07-15T19:00:00Z", slotA: { winnerOf: 27 }, slotB: { winnerOf: 28 } }, // #102, Atlanta
 
   // ---- Final (match 31, 16 pts) ----
-  { id: 31, round: "F", date: "2026-07-19T19:00:00Z", slotA: { winnerOf: 29 }, slotB: { winnerOf: 30 } },
+  { id: 31, round: "F", date: "2026-07-19T19:00:00Z", slotA: { winnerOf: 29 }, slotB: { winnerOf: 30 } },  // #104, New York/New Jersey
 ];
 
 export const MATCH_BY_ID: Record<number, Match> = Object.fromEntries(
