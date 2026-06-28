@@ -54,7 +54,7 @@ export default function PersonPage({ params }: { params: { slug: string } }) {
         </div>
       </header>
 
-      <section className="mx-auto max-w-3xl px-5">
+      <section className="mx-auto max-w-5xl px-5">
         <h2 className="mb-1 text-lg font-semibold tracking-tight text-ink">
           Les seves prediccions
         </h2>
