@@ -77,7 +77,7 @@ export function TeamColumn({
   return (
     <div
       className={`flex flex-1 flex-col items-center gap-2.5 text-center transition ${
-        dimmed ? "opacity-35" : ""
+        dimmed ? "opacity-20" : ""
       }`}
     >
       <Flag team={team} width={flagWidth} className="shadow-sm" />

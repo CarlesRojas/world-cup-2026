@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { RankingRow } from "@/lib/scoring";
+import { slugify } from "@/lib/people";
 
 type SortKey = "current" | "potential";
 type SortDir = "asc" | "desc";
@@ -72,7 +74,14 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
                 <td className="py-3 pl-4 text-left tabular-nums text-ink-faint">
                   {i + 1}
                 </td>
-                <td className="py-3 px-2 font-medium text-ink">{r.person}</td>
+                <td className="py-3 px-2 font-medium">
+                  <Link
+                    href={`/persona/${slugify(r.person)}`}
+                    className="text-ink underline-offset-2 transition hover:underline"
+                  >
+                    {r.person}
+                  </Link>
+                </td>
                 <td className="py-3 px-2 text-center">
                   <span
                     className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${

@@ -32,7 +32,7 @@ export default function RiskCarousel({
   return (
     <div
       ref={scrollerRef}
-      className="no-scrollbar flex snap-x snap-mandatory items-start gap-4 overflow-x-auto pb-4"
+      className="no-scrollbar flex snap-x snap-mandatory items-start gap-4 overflow-x-auto pb-4 pt-4"
       style={{
         paddingLeft: "max(1rem, calc(50vw - 190px))",
         paddingRight: "max(1rem, calc(50vw - 190px))",

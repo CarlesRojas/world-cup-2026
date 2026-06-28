@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Flag, TeamColumn } from "./TeamBadge";
+import { slugify } from "@/lib/people";
 
 export interface RiskGroupData {
   team: string;
@@ -35,12 +37,18 @@ export default function MatchCard({
   const { teamA, teamB, decided, winner, groups } = data;
   const anyStake = groups.some((g) => g.entries.length > 0);
   return (
-    <article
-      className={`flex w-[86vw] max-w-[380px] shrink-0 snap-center flex-col self-start overflow-hidden rounded-2xl bg-surface transition ${
-        focused ? "shadow-lg ring-1 ring-ink/10" : "shadow-sm"
-      }`}
-    >
-      <header className="flex items-start justify-between gap-2 px-5 pt-4">
+    <div className="relative w-[86vw] max-w-[380px] shrink-0 snap-center snap-always self-start">
+      {focused && (
+        <span className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-blue-600 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">
+          Pròxim partit
+        </span>
+      )}
+      <article
+        className={`flex w-full flex-col overflow-hidden rounded-2xl bg-surface transition ${
+          focused ? "ring-2 ring-blue-600" : "shadow-sm"
+        }`}
+      >
+        <header className="flex items-start justify-between gap-2 px-5 pt-4">
         <div className="min-w-0 text-xs">
           <div className="font-semibold text-ink">{data.roundLabel}</div>
           <div className="mt-0.5 text-ink-muted">{data.dateLabel}</div>
@@ -84,8 +92,9 @@ export default function MatchCard({
             </div>
           </>
         )}
-      </div>
-    </article>
+        </div>
+      </article>
+    </div>
   );
 }
 
@@ -102,7 +111,7 @@ function RiskColumn({
   // loser's backers actually lost those points — keep them at full opacity.
   const kept = decided && group.team === winner;
   return (
-    <div className={`min-w-0 transition ${kept ? "opacity-40" : ""}`}>
+    <div className={`min-w-0 transition ${kept ? "opacity-20" : ""}`}>
       <div className="mb-2 flex items-center gap-1.5 border-b border-line pb-1.5">
         <Flag team={group.team} width={16} height={11} />
         <span className="truncate text-xs font-semibold text-ink">
@@ -118,7 +127,12 @@ function RiskColumn({
               key={e.person}
               className="flex items-center justify-between gap-2 text-sm"
             >
-              <span className="truncate text-ink-muted">{e.person}</span>
+              <Link
+                href={`/persona/${slugify(e.person)}`}
+                className="truncate text-ink-muted underline-offset-2 transition hover:text-ink hover:underline"
+              >
+                {e.person}
+              </Link>
               <span className="shrink-0 font-semibold tabular-nums text-rose-600 dark:text-rose-400">
                 −{e.risk}
               </span>
