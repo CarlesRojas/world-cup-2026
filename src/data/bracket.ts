@@ -41,21 +41,23 @@ export interface Match {
 
 export const MATCHES: Match[] = [
   // ---- Round of 32 (matches 1-16, 1 pt) ----
-  { id: 1, round: "R32", date: "2026-06-28", slotA: { team: "Alemanya" }, slotB: { team: "Paraguai" } },
-  { id: 2, round: "R32", date: "2026-06-28", slotA: { team: "França" }, slotB: { team: "Suècia" } },
-  { id: 3, round: "R32", date: "2026-06-29", slotA: { team: "Sudàfrica" }, slotB: { team: "Canadà" } },
+  // Dates from the real FIFA World Cup 2026 knockout schedule (per fixture):
+  // Sudàfrica–Canadà opens the round on 28 June.
+  { id: 1, round: "R32", date: "2026-06-29", slotA: { team: "Alemanya" }, slotB: { team: "Paraguai" } },
+  { id: 2, round: "R32", date: "2026-06-30", slotA: { team: "França" }, slotB: { team: "Suècia" } },
+  { id: 3, round: "R32", date: "2026-06-28", slotA: { team: "Sudàfrica" }, slotB: { team: "Canadà" } },
   { id: 4, round: "R32", date: "2026-06-29", slotA: { team: "Països Baixos" }, slotB: { team: "Marroc" } },
-  { id: 5, round: "R32", date: "2026-06-30", slotA: { team: "Portugal" }, slotB: { team: "Croàcia" } },
-  { id: 6, round: "R32", date: "2026-06-30", slotA: { team: "Espanya" }, slotB: { team: "Àustria" } },
+  { id: 5, round: "R32", date: "2026-07-02", slotA: { team: "Portugal" }, slotB: { team: "Croàcia" } },
+  { id: 6, round: "R32", date: "2026-07-02", slotA: { team: "Espanya" }, slotB: { team: "Àustria" } },
   { id: 7, round: "R32", date: "2026-07-01", slotA: { team: "Estats Units" }, slotB: { team: "Bòsnia i H." } },
   { id: 8, round: "R32", date: "2026-07-01", slotA: { team: "Bèlgica" }, slotB: { team: "Senegal" } },
-  { id: 9, round: "R32", date: "2026-07-02", slotA: { team: "Brasil" }, slotB: { team: "Japó" } },
-  { id: 10, round: "R32", date: "2026-07-02", slotA: { team: "Costa d'Ivori" }, slotB: { team: "Noruega" } },
-  { id: 11, round: "R32", date: "2026-07-02", slotA: { team: "Mèxic" }, slotB: { team: "Ecuador" } },
-  { id: 12, round: "R32", date: "2026-07-03", slotA: { team: "Anglaterra" }, slotB: { team: "Congo" } },
+  { id: 9, round: "R32", date: "2026-06-29", slotA: { team: "Brasil" }, slotB: { team: "Japó" } },
+  { id: 10, round: "R32", date: "2026-06-30", slotA: { team: "Costa d'Ivori" }, slotB: { team: "Noruega" } },
+  { id: 11, round: "R32", date: "2026-06-30", slotA: { team: "Mèxic" }, slotB: { team: "Ecuador" } },
+  { id: 12, round: "R32", date: "2026-07-01", slotA: { team: "Anglaterra" }, slotB: { team: "Congo" } },
   { id: 13, round: "R32", date: "2026-07-03", slotA: { team: "Argentina" }, slotB: { team: "Cap Verd" } },
   { id: 14, round: "R32", date: "2026-07-03", slotA: { team: "Austràlia" }, slotB: { team: "Egipte" } },
-  { id: 15, round: "R32", date: "2026-07-03", slotA: { team: "Suïssa" }, slotB: { team: "Algèria" } },
+  { id: 15, round: "R32", date: "2026-07-02", slotA: { team: "Suïssa" }, slotB: { team: "Algèria" } },
   { id: 16, round: "R32", date: "2026-07-03", slotA: { team: "Colòmbia" }, slotB: { team: "Ghana" } },
 
   // ---- Round of 16 (matches 17-24, 2 pts) ----

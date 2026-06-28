@@ -1,4 +1,10 @@
-import TeamBadge, { Flag } from "./TeamBadge";
+import { Flag, TeamColumn } from "./TeamBadge";
+
+export interface RiskGroupData {
+  team: string;
+  total: number;
+  entries: { person: string; risk: number }[];
+}
 
 export interface MatchCardData {
   id: number;
@@ -9,12 +15,14 @@ export interface MatchCardData {
   teamB: string | null;
   decided: boolean;
   winner: string | null;
-  risks: { person: string; pick: string; risk: number }[];
+  groups: RiskGroupData[];
 }
 
 /**
- * One match in the carousel: round + date header, the two teams (with crests),
- * and the per-person "points at risk" list for this match.
+ * One match: header (round · date · points), the two teams side by side with a
+ * "vs" in the middle (flag on top, name underneath), and the points-at-risk
+ * split into one column per team. The card grows as tall as needed — the page
+ * scrolls, the card never does.
  */
 export default function MatchCard({
   data,
@@ -23,87 +31,85 @@ export default function MatchCard({
   data: MatchCardData;
   focused: boolean;
 }) {
+  const { teamA, teamB, decided, winner } = data;
   return (
     <article
-      className={`flex w-[82vw] max-w-[360px] shrink-0 snap-center flex-col overflow-hidden rounded-2xl ring-1 transition
-        ${
-          focused
-            ? "ring-emerald-400/60 bg-white/[0.06] shadow-lg shadow-emerald-900/30"
-            : "ring-white/10 bg-white/[0.03]"
-        }`}
+      className={`flex w-[86vw] max-w-[380px] shrink-0 snap-center flex-col self-start overflow-hidden rounded-2xl border bg-white transition ${
+        focused ? "border-ink shadow-sm" : "border-line"
+      }`}
     >
-      <header className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
-        <div className="min-w-0">
-          <div className="truncate text-sm font-semibold">{data.roundLabel}</div>
-          <div className="text-xs text-white/50">{data.dateLabel}</div>
+      <header className="flex items-center justify-between gap-2 px-5 pt-4">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="font-semibold text-ink">{data.roundLabel}</span>
+          <span className="text-ink-faint">·</span>
+          <span className="text-ink-muted">{data.dateLabel}</span>
         </div>
-        <span className="shrink-0 rounded-full bg-amber-300/15 px-2.5 py-1 text-xs font-semibold text-amber-200">
-          {data.points} {data.points === 1 ? "punt" : "punts"}
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-ink-muted">
+          {data.points} {data.points === 1 ? "pt" : "pts"}
         </span>
       </header>
 
-      <div className="space-y-1 px-4 py-3">
-        <TeamRow team={data.teamA} winner={data.winner} decided={data.decided} />
-        <div className="pl-1 text-[10px] font-semibold uppercase tracking-wider text-white/30">
+      <div className="flex items-center gap-3 px-5 py-5">
+        <TeamColumn team={teamA} dimmed={decided && teamA !== winner} />
+        <span className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
           vs
-        </div>
-        <TeamRow team={data.teamB} winner={data.winner} decided={data.decided} />
+        </span>
+        <TeamColumn team={teamB} dimmed={decided && teamB !== winner} />
       </div>
 
-      <div className="mt-auto border-t border-white/10 px-4 py-3">
-        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/45">
-          {data.decided ? "Resultat registrat" : "Punts en joc"}
-        </div>
-
-        {data.decided ? (
-          <p className="text-sm text-white/60">
-            Guanya{" "}
-            <span className="font-semibold text-white">{data.winner}</span>.
+      <div className="border-t border-line px-5 py-4">
+        {decided ? (
+          <p className="flex items-center justify-center gap-2 text-sm text-ink-muted">
+            <Flag team={winner} width={18} height={12} />
+            Guanya <span className="font-semibold text-ink">{winner}</span>
           </p>
-        ) : data.risks.length === 0 ? (
-          <p className="text-sm text-white/50">Ningú té punts en joc aquí.</p>
+        ) : data.groups.every((g) => g.entries.length === 0) ? (
+          <p className="text-center text-sm text-ink-faint">
+            Ningú té punts en joc aquí.
+          </p>
         ) : (
-          <ul className="max-h-56 space-y-1 overflow-y-auto pr-1 no-scrollbar">
-            {data.risks.map((r) => (
-              <li
-                key={r.person}
-                className="flex items-center justify-between gap-2 text-sm"
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="truncate">{r.person}</span>
-                  <Flag team={r.pick} width={18} height={12} />
-                </span>
-                <span className="shrink-0 rounded-md bg-rose-400/15 px-1.5 py-0.5 text-xs font-semibold text-rose-300 tabular-nums">
-                  −{r.risk}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+              Punts en joc
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+              {data.groups.slice(0, 2).map((g) => (
+                <RiskColumn key={g.team} group={g} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </article>
   );
 }
 
-function TeamRow({
-  team,
-  winner,
-  decided,
-}: {
-  team: string | null;
-  winner: string | null;
-  decided: boolean;
-}) {
-  const isWinner = decided && team !== null && team === winner;
-  const isLoser = decided && team !== null && winner !== null && team !== winner;
+function RiskColumn({ group }: { group: RiskGroupData }) {
   return (
-    <div
-      className={`flex items-center justify-between rounded-lg px-2 py-1.5 ${
-        isWinner ? "bg-emerald-400/10" : ""
-      } ${isLoser ? "opacity-40" : ""}`}
-    >
-      <TeamBadge team={team} size={26} nameClassName="font-medium" />
-      {isWinner && <span className="text-emerald-300">✓</span>}
+    <div className="min-w-0">
+      <div className="mb-2 flex items-center gap-1.5 border-b border-line pb-1.5">
+        <Flag team={group.team} width={16} height={11} />
+        <span className="truncate text-xs font-semibold text-ink">
+          {group.team}
+        </span>
+      </div>
+      {group.entries.length === 0 ? (
+        <p className="text-xs text-ink-faint">—</p>
+      ) : (
+        <ul className="space-y-1">
+          {group.entries.map((e) => (
+            <li
+              key={e.person}
+              className="flex items-center justify-between gap-2 text-sm"
+            >
+              <span className="truncate text-ink-muted">{e.person}</span>
+              <span className="shrink-0 font-semibold tabular-nums text-rose-600">
+                −{e.risk}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

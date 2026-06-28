@@ -13,12 +13,11 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #15452b 0%, transparent 60%),
-    linear-gradient(180deg, #0a1f14 0%, #07150d 100%);
-  background-attachment: fixed;
-  color: #f3f6f4;
+  background: #ffffff;
+  color: #0a0a0a;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Hide scrollbars on the horizontal carousel while keeping it scrollable */

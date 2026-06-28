@@ -8,11 +8,13 @@ const config: Config = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       colors: {
-        pitch: {
-          900: "#0a1f14",
-          800: "#0f2c1c",
-          700: "#15452b",
+        // Minimalist neutral palette — near-black ink on white, hairline borders.
+        ink: {
+          DEFAULT: "#0a0a0a",
+          muted: "#52525b",
+          faint: "#a1a1aa",
         },
+        line: "#e7e7e9",
       },
     },
   },

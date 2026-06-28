@@ -193,6 +193,39 @@ export function risksForMatch(matchId: number, results: Results): RiskEntry[] {
     .sort((a, b) => b.risk - a.risk || a.person.localeCompare(b.person, "ca"));
 }
 
+export interface RiskGroup {
+  team: string;
+  total: number;
+  entries: { person: string; risk: number }[];
+}
+
+/**
+ * Risk for a match, split into one group per team a person picked.
+ *
+ * The two participants of the match come first (in slot order) so the card can
+ * show one team on the left and the other on the right. Groups are returned for
+ * the two known participants even if empty, so both sides always render. Any
+ * other picked teams (possible when participants aren't decided yet) follow.
+ */
+export function risksByTeam(m: Match, results: Results): RiskGroup[] {
+  const all = risksForMatch(m.id, results);
+  const byTeam = new Map<string, { person: string; risk: number }[]>();
+  for (const e of all) {
+    if (!byTeam.has(e.pick)) byTeam.set(e.pick, []);
+    byTeam.get(e.pick)!.push({ person: e.person, risk: e.risk });
+  }
+  const [a, b] = matchParticipants(m, results);
+  const ordered: string[] = [];
+  for (const t of [a, b]) if (t && !ordered.includes(t)) ordered.push(t);
+  for (const t of byTeam.keys()) if (!ordered.includes(t)) ordered.push(t);
+  return ordered.map((team) => {
+    const entries = (byTeam.get(team) ?? []).sort(
+      (x, y) => y.risk - x.risk || x.person.localeCompare(y.person, "ca"),
+    );
+    return { team, total: entries.reduce((s, e) => s + e.risk, 0), entries };
+  });
+}
+
 /** Resolve who actually plays in a slot (team name) given recorded results. */
 export function resolveSlot(slot: Slot, results: Results): string | null {
   if ("team" in slot) return slot.team;

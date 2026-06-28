@@ -4,9 +4,10 @@ import { useEffect, useRef } from "react";
 import MatchCard, { type MatchCardData } from "./MatchCard";
 
 /**
- * Horizontal, scroll-snap carousel of match cards.
+ * Full-width, horizontal scroll-snap carousel of match cards.
  * On load it scrolls so the "next" match (focusIndex) sits in the CENTER, with
- * past matches to the left and upcoming ones to the right.
+ * past matches to the left and upcoming ones to the right. Cards align to the
+ * top and grow as tall as they need; only this strip scrolls horizontally.
  */
 export default function RiskCarousel({
   cards,
@@ -31,10 +32,18 @@ export default function RiskCarousel({
   return (
     <div
       ref={scrollerRef}
-      className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-[9vw] pb-2"
+      className="no-scrollbar flex snap-x snap-mandatory items-start gap-4 overflow-x-auto pb-4"
+      style={{
+        paddingLeft: "max(1rem, calc(50vw - 190px))",
+        paddingRight: "max(1rem, calc(50vw - 190px))",
+      }}
     >
       {cards.map((card, i) => (
-        <div key={card.id} ref={i === focusIndex ? focusedRef : undefined}>
+        <div
+          key={card.id}
+          className="self-start"
+          ref={i === focusIndex ? focusedRef : undefined}
+        >
           <MatchCard data={card} focused={i === focusIndex} />
         </div>
       ))}

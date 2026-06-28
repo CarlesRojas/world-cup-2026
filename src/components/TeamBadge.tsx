@@ -20,14 +20,14 @@ export function Flag({
   if (!code) {
     return (
       <span
-        className={`inline-block rounded-[3px] bg-white/10 ring-1 ring-white/15 ${className}`}
+        className={`inline-block rounded bg-zinc-100 ring-1 ring-line ${className}`}
         style={{ width, height: h }}
       />
     );
   }
   return (
     <span
-      className={`fi fi-${code} inline-block rounded-[3px] ring-1 ring-black/30 ${className}`}
+      className={`fi fi-${code} inline-block rounded ring-1 ring-black/5 ${className}`}
       title={team ?? undefined}
       style={{ width, height: h, backgroundSize: "cover" }}
     />
@@ -35,7 +35,7 @@ export function Flag({
 }
 
 /**
- * A team's crest (flag) + name.
+ * A team's crest (flag) + name on one line. Used in compact rows.
  */
 export default function TeamBadge({
   team,
@@ -52,10 +52,38 @@ export default function TeamBadge({
 }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <Flag team={team} width={size} className="shrink-0 shadow" />
+      <Flag team={team} width={size} className="shrink-0" />
       {!hideName && (
         <span className={`truncate ${nameClassName}`}>{team ?? "—"}</span>
       )}
     </span>
+  );
+}
+
+/**
+ * A vertical team crest: flag on top, name underneath. Used for the two sides
+ * of a match (left vs right). `dimmed` greys out a team that lost; `highlight`
+ * is the winner.
+ */
+export function TeamColumn({
+  team,
+  flagWidth = 64,
+  dimmed = false,
+}: {
+  team: string | null;
+  flagWidth?: number;
+  dimmed?: boolean;
+}) {
+  return (
+    <div
+      className={`flex flex-1 flex-col items-center gap-2.5 text-center transition ${
+        dimmed ? "opacity-35" : ""
+      }`}
+    >
+      <Flag team={team} width={flagWidth} className="shadow-sm" />
+      <span className="text-sm font-medium leading-tight text-ink">
+        {team ?? "—"}
+      </span>
+    </div>
   );
 }

@@ -1,63 +1,147 @@
+"use client";
+
+import { useState } from "react";
 import type { RankingRow } from "@/lib/scoring";
 
+type SortKey = "current" | "potential";
+
 /**
- * The ranking: Name · Current points · Potential points.
- * Sorted upstream (most points on top). Responsive: comfortable on phones,
- * roomy on desktop.
+ * Ranking: Name · Current points · Potential points.
+ * A segmented control switches the sort between current and potential points.
+ * Both point columns are centered.
  */
 export default function RankingTable({ rows }: { rows: RankingRow[] }) {
-  const maxPotential = Math.max(1, ...rows.map((r) => r.potential));
+  const [sortBy, setSortBy] = useState<SortKey>("current");
+
+  const sorted = [...rows].sort((a, b) => {
+    const other: SortKey = sortBy === "current" ? "potential" : "current";
+    return (
+      b[sortBy] - a[sortBy] ||
+      b[other] - a[other] ||
+      a.person.localeCompare(b.person, "ca")
+    );
+  });
 
   return (
-    <div className="overflow-hidden rounded-2xl ring-1 ring-white/10 bg-white/[0.03] backdrop-blur">
-      <table className="w-full border-collapse text-sm sm:text-base">
-        <thead>
-          <tr className="text-left text-white/60">
-            <th className="py-3 pl-3 pr-2 font-medium w-10 sm:w-14">#</th>
-            <th className="py-3 px-2 font-medium">Nom</th>
-            <th className="py-3 px-2 font-medium text-right whitespace-nowrap">
-              Punts<span className="hidden sm:inline"> actuals</span>
-            </th>
-            <th className="py-3 pl-2 pr-3 font-medium text-right whitespace-nowrap">
-              Potencials
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r, i) => {
-            const medal = ["🥇", "🥈", "🥉"][i];
-            return (
+    <div>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold tracking-tight text-ink">
+          Classificació
+        </h2>
+        <Segmented sortBy={sortBy} onChange={setSortBy} />
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-line">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="text-xs uppercase tracking-wide text-ink-faint">
+              <th className="w-10 py-3 pl-4 text-left font-medium">#</th>
+              <th className="py-3 px-2 text-left font-medium">Nom</th>
+              <SortHeader
+                label="Actuals"
+                active={sortBy === "current"}
+                onClick={() => setSortBy("current")}
+              />
+              <SortHeader
+                label="Potencials"
+                active={sortBy === "potential"}
+                onClick={() => setSortBy("potential")}
+                rightPad
+              />
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((r, i) => (
               <tr
                 key={r.person}
-                className="border-t border-white/[0.06] hover:bg-white/[0.04]"
+                className="border-t border-line last:border-b-0"
               >
-                <td className="py-2.5 pl-3 pr-2 text-white/50 tabular-nums">
-                  {medal ?? i + 1}
+                <td className="py-3 pl-4 text-left tabular-nums text-ink-faint">
+                  {i + 1}
                 </td>
-                <td className="py-2.5 px-2 font-medium">{r.person}</td>
-                <td className="py-2.5 px-2 text-right">
-                  <span className="inline-block min-w-8 rounded-md bg-emerald-400/15 px-2 py-0.5 font-semibold text-emerald-300 tabular-nums">
+                <td className="py-3 px-2 font-medium text-ink">{r.person}</td>
+                <td className="py-3 px-2 text-center">
+                  <span
+                    className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
+                      sortBy === "current"
+                        ? "bg-ink text-white"
+                        : "text-ink"
+                    }`}
+                  >
                     {r.current}
                   </span>
                 </td>
-                <td className="py-2.5 pl-2 pr-3 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <span
-                      className="hidden h-1.5 rounded-full bg-sky-400/40 sm:block"
-                      style={{
-                        width: `${(r.potential / maxPotential) * 64}px`,
-                      }}
-                    />
-                    <span className="tabular-nums text-white/80">
-                      {r.potential}
-                    </span>
-                  </div>
+                <td className="py-3 pr-4 pl-2 text-center">
+                  <span
+                    className={`inline-block min-w-[2.25rem] rounded-md px-2 py-0.5 font-semibold tabular-nums ${
+                      sortBy === "potential"
+                        ? "bg-ink text-white"
+                        : "text-ink-muted"
+                    }`}
+                  >
+                    {r.potential}
+                  </span>
                 </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function SortHeader({
+  label,
+  active,
+  onClick,
+  rightPad = false,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  rightPad?: boolean;
+}) {
+  return (
+    <th className={`py-3 px-2 text-center font-medium ${rightPad ? "pr-4" : ""}`}>
+      <button
+        onClick={onClick}
+        className={`uppercase tracking-wide transition ${
+          active ? "text-ink" : "text-ink-faint hover:text-ink-muted"
+        }`}
+      >
+        {label}
+      </button>
+    </th>
+  );
+}
+
+function Segmented({
+  sortBy,
+  onChange,
+}: {
+  sortBy: SortKey;
+  onChange: (k: SortKey) => void;
+}) {
+  const opts: { key: SortKey; label: string }[] = [
+    { key: "current", label: "Actuals" },
+    { key: "potential", label: "Potencials" },
+  ];
+  return (
+    <div className="inline-flex rounded-lg border border-line p-0.5 text-xs">
+      {opts.map((o) => (
+        <button
+          key={o.key}
+          onClick={() => onChange(o.key)}
+          className={`rounded-md px-3 py-1.5 font-medium transition ${
+            sortBy === o.key
+              ? "bg-ink text-white"
+              : "text-ink-muted hover:text-ink"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
     </div>
   );
 }
