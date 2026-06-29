@@ -73,11 +73,12 @@ export default async function Home() {
         </p>
       </header>
 
-      {/* Podium — shown always for now to review the design; later we'll only
-          show it once every match is resolved (allResolved). */}
-      <section className="mx-auto mb-12 max-w-2xl px-5">
-        <Podium rows={ranking} />
-      </section>
+      {/* Podium only once every match has a result. */}
+      {decidedCount === ordered.length && (
+        <section className="mx-auto mb-12 max-w-2xl px-5">
+          <Podium rows={ranking} />
+        </section>
+      )}
 
       <section className="mx-auto mb-14 max-w-2xl px-5">
         <RankingTable rows={ranking} />
