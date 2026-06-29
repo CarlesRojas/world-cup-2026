@@ -44,8 +44,8 @@ const META: Record<
     label: "1r",
     title: "Guanyadors",
     height: "h-28 sm:h-32",
-    bg: "bg-amber-200/70 dark:bg-amber-400/15",
-    text: "text-amber-900 dark:text-amber-200",
+    bg: "bg-amber-200/45 dark:bg-amber-400/15",
+    text: "text-amber-800 dark:text-amber-200",
   },
   2: {
     label: "2n",
@@ -56,8 +56,8 @@ const META: Record<
   3: {
     label: "3r",
     height: "h-16 sm:h-20",
-    bg: "bg-orange-200/55 dark:bg-orange-400/12",
-    text: "text-orange-900/80 dark:text-orange-200/80",
+    bg: "bg-orange-200/45 dark:bg-orange-400/10",
+    text: "text-orange-900/80 dark:text-orange-300/55",
   },
 };
 
