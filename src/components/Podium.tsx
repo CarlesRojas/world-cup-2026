@@ -38,28 +38,26 @@ export default function Podium({ rows }: { rows: RankingRow[] }) {
 
 const META: Record<
   1 | 2 | 3,
-  { medal: string; label: string; height: string; bg: string; text: string }
+  { label: string; title?: string; height: string; bg: string; text: string }
 > = {
   1: {
-    medal: "🥇",
     label: "1r",
-    height: "h-24 sm:h-28",
-    bg: "bg-amber-300",
-    text: "text-amber-950",
+    title: "Guanyadors",
+    height: "h-28 sm:h-32",
+    bg: "bg-amber-200/70 dark:bg-amber-400/15",
+    text: "text-amber-900 dark:text-amber-200",
   },
   2: {
-    medal: "🥈",
     label: "2n",
-    height: "h-16 sm:h-20",
-    bg: "bg-zinc-300",
-    text: "text-zinc-800",
+    height: "h-20 sm:h-24",
+    bg: "bg-zinc-200/80 dark:bg-zinc-400/15",
+    text: "text-zinc-600 dark:text-zinc-300",
   },
   3: {
-    medal: "🥉",
     label: "3r",
-    height: "h-12 sm:h-16",
-    bg: "bg-amber-700",
-    text: "text-amber-50",
+    height: "h-16 sm:h-20",
+    bg: "bg-orange-200/55 dark:bg-orange-400/12",
+    text: "text-orange-900/80 dark:text-orange-200/80",
   },
 };
 
@@ -79,10 +77,16 @@ function PodiumStep({ step }: { step: Step }) {
         ))}
       </div>
       <div
-        className={`flex w-full ${meta.height} flex-col items-center justify-start gap-0.5 rounded-t-xl pt-2 ${meta.bg} ${meta.text}`}
+        className={`flex w-full ${meta.height} flex-col items-center justify-center gap-0.5 rounded-t-xl ${meta.bg} ${meta.text}`}
       >
-        <span className="text-2xl leading-none">{meta.medal}</span>
-        <span className="text-xs font-bold">{meta.label}</span>
+        <span className="text-4xl font-black leading-none tracking-tight sm:text-5xl">
+          {meta.label}
+        </span>
+        {meta.title && (
+          <span className="text-[11px] font-semibold uppercase tracking-wide">
+            {meta.title}
+          </span>
+        )}
       </div>
     </div>
   );
