@@ -4,7 +4,7 @@ import {
   ROUND_POINTS,
   type Round,
 } from "@/data/bracket";
-import { RESULTS } from "@/data/results";
+import type { Results } from "@/data/results";
 import {
   pickFor,
   isDecided,
@@ -17,12 +17,12 @@ const ROUND_ORDER: Round[] = ["R32", "R16", "QF", "SF", "F"];
 
 type Status = "correct" | "wrong" | "dead" | "pending";
 
-function statusFor(person: string, matchId: number): Status {
+function statusFor(person: string, matchId: number, results: Results): Status {
   const pick = pickFor(person, matchId);
-  if (isDecided(matchId, RESULTS)) {
-    return getActualWinner(matchId, RESULTS) === pick ? "correct" : "wrong";
+  if (isDecided(matchId, results)) {
+    return getActualWinner(matchId, results) === pick ? "correct" : "wrong";
   }
-  return isTeamEliminated(pick, RESULTS) ? "dead" : "pending";
+  return isTeamEliminated(pick, results) ? "dead" : "pending";
 }
 
 /**
@@ -33,7 +33,13 @@ function statusFor(person: string, matchId: number): Status {
  * Columns scroll horizontally; `justify-around` spaces each round so it reads
  * like a bracket.
  */
-export default function PredictionBracket({ person }: { person: string }) {
+export default function PredictionBracket({
+  person,
+  results,
+}: {
+  person: string;
+  results: Results;
+}) {
   return (
     <div>
       <div className="no-scrollbar overflow-x-auto pb-2">
@@ -64,7 +70,7 @@ export default function PredictionBracket({ person }: { person: string }) {
                         <PickCell
                           key={m.id}
                           team={pickFor(person, m.id)}
-                          status={statusFor(person, m.id)}
+                          status={statusFor(person, m.id, results)}
                         />
                       ))}
                     </div>
@@ -75,8 +81,6 @@ export default function PredictionBracket({ person }: { person: string }) {
           })}
         </div>
       </div>
-
-      <Legend />
     </div>
   );
 }
@@ -108,21 +112,3 @@ function PickCell({ team, status }: { team: string; status: Status }) {
   );
 }
 
-function Legend() {
-  const items: { label: string; className: string }[] = [
-    { label: "Encertat", className: "bg-emerald-500/20 ring-emerald-500/40" },
-    { label: "Fallat", className: "bg-rose-500/20 ring-rose-500/40" },
-    { label: "Ja no pot passar", className: "bg-surface ring-line" },
-    { label: "Pendent", className: "bg-surface ring-line" },
-  ];
-  return (
-    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 px-1 text-[11px] text-ink-muted">
-      {items.map((it) => (
-        <span key={it.label} className="inline-flex items-center gap-1.5">
-          <span className={`h-3 w-3 rounded ring-1 ${it.className}`} />
-          {it.label}
-        </span>
-      ))}
-    </div>
-  );
-}
