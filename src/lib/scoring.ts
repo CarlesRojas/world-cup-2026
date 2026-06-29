@@ -201,10 +201,15 @@ export function getRanking(results: Results): RankingRow[] {
     potential: potentialPoints(person, results),
   }));
   const maxCurrent = Math.max(0, ...base.map((r) => r.current));
+  // Dense ranking: position = how many DISTINCT higher scores exist, + 1.
+  // So 17 people on the top score are #1 and the next score group is #2 (not #18).
+  const distinctScores = [...new Set(base.map((r) => r.current))].sort(
+    (a, b) => b - a,
+  );
   return base
     .map((r) => ({
       ...r,
-      position: 1 + base.filter((o) => o.current > r.current).length,
+      position: distinctScores.indexOf(r.current) + 1,
       tiedWith: base.filter(
         (o) => o.person !== r.person && o.current === r.current,
       ).length,

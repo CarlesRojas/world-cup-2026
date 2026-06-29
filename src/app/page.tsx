@@ -3,8 +3,9 @@ import RiskCarousel from "@/components/RiskCarousel";
 import ThemeToggle from "@/components/ThemeToggle";
 import Podium from "@/components/Podium";
 import type { MatchCardData } from "@/components/MatchCard";
-import { RESULTS } from "@/data/results";
+import type { Results } from "@/data/results";
 import { ROUND_LABEL, ROUND_POINTS, type Match } from "@/data/bracket";
+import { getResults } from "@/lib/db";
 import {
   getRanking,
   matchesByDate,
@@ -15,8 +16,8 @@ import {
   risksByTeam,
 } from "@/lib/scoring";
 
-// Recompute statically; editing results.ts + redeploy reflects new results.
-export const dynamic = "force-static";
+// Results come from the database (admin page), so render per request.
+export const dynamic = "force-dynamic";
 
 // Kickoff shown in Spain/Catalonia time, e.g. "dg. 28 jun. · 21:00".
 function formatDate(iso: string): string {
@@ -31,8 +32,8 @@ function formatDate(iso: string): string {
   }).format(d);
 }
 
-function buildCard(m: Match): MatchCardData {
-  const [teamA, teamB] = matchParticipants(m, RESULTS);
+function buildCard(m: Match, results: Results): MatchCardData {
+  const [teamA, teamB] = matchParticipants(m, results);
   return {
     id: m.id,
     roundLabel: ROUND_LABEL[m.round],
@@ -40,18 +41,19 @@ function buildCard(m: Match): MatchCardData {
     dateLabel: formatDate(m.date),
     teamA,
     teamB,
-    decided: isDecided(m.id, RESULTS),
-    winner: getActualWinner(m.id, RESULTS),
-    groups: risksByTeam(m, RESULTS),
+    decided: isDecided(m.id, results),
+    winner: getActualWinner(m.id, results),
+    groups: risksByTeam(m, results),
   };
 }
 
-export default function Home() {
-  const ranking = getRanking(RESULTS);
+export default async function Home() {
+  const results = await getResults();
+  const ranking = getRanking(results);
   const ordered = matchesByDate();
-  const cards = ordered.map(buildCard);
-  const focusIndex = nextMatchIndex(ordered, RESULTS);
-  const decidedCount = ordered.filter((m) => isDecided(m.id, RESULTS)).length;
+  const cards = ordered.map((m) => buildCard(m, results));
+  const focusIndex = nextMatchIndex(ordered, results);
+  const decidedCount = ordered.filter((m) => isDecided(m.id, results)).length;
 
   return (
     <main className="py-6 sm:py-10">

@@ -4,7 +4,7 @@ import {
   ROUND_POINTS,
   type Round,
 } from "@/data/bracket";
-import { RESULTS } from "@/data/results";
+import type { Results } from "@/data/results";
 import {
   pickFor,
   isDecided,
@@ -17,12 +17,12 @@ const ROUND_ORDER: Round[] = ["R32", "R16", "QF", "SF", "F"];
 
 type Status = "correct" | "wrong" | "dead" | "pending";
 
-function statusFor(person: string, matchId: number): Status {
+function statusFor(person: string, matchId: number, results: Results): Status {
   const pick = pickFor(person, matchId);
-  if (isDecided(matchId, RESULTS)) {
-    return getActualWinner(matchId, RESULTS) === pick ? "correct" : "wrong";
+  if (isDecided(matchId, results)) {
+    return getActualWinner(matchId, results) === pick ? "correct" : "wrong";
   }
-  return isTeamEliminated(pick, RESULTS) ? "dead" : "pending";
+  return isTeamEliminated(pick, results) ? "dead" : "pending";
 }
 
 /**
@@ -33,7 +33,13 @@ function statusFor(person: string, matchId: number): Status {
  * Columns scroll horizontally; `justify-around` spaces each round so it reads
  * like a bracket.
  */
-export default function PredictionBracket({ person }: { person: string }) {
+export default function PredictionBracket({
+  person,
+  results,
+}: {
+  person: string;
+  results: Results;
+}) {
   return (
     <div>
       <div className="no-scrollbar overflow-x-auto pb-2">
@@ -64,7 +70,7 @@ export default function PredictionBracket({ person }: { person: string }) {
                         <PickCell
                           key={m.id}
                           team={pickFor(person, m.id)}
-                          status={statusFor(person, m.id)}
+                          status={statusFor(person, m.id, results)}
                         />
                       ))}
                     </div>

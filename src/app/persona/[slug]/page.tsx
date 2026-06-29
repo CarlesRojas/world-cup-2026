@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { PEOPLE } from "@/data/predictions";
-import { RESULTS } from "@/data/results";
+import { getResults } from "@/lib/db";
 import { getRanking } from "@/lib/scoring";
-import { personBySlug, slugify } from "@/lib/people";
+import { personBySlug } from "@/lib/people";
 import ThemeToggle from "@/components/ThemeToggle";
 import PredictionBracket from "@/components/PredictionBracket";
 
-export const dynamic = "force-static";
-
-export function generateStaticParams() {
-  return PEOPLE.map((p) => ({ slug: slugify(p) }));
-}
+// Results come from the database, so render per request.
+export const dynamic = "force-dynamic";
 
 export function generateMetadata({
   params,
@@ -23,11 +19,16 @@ export function generateMetadata({
   return { title: person ? `${person} · Mundial a la Porra` : "Mundial a la Porra" };
 }
 
-export default function PersonPage({ params }: { params: { slug: string } }) {
+export default async function PersonPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const person = personBySlug(params.slug);
   if (!person) notFound();
 
-  const ranking = getRanking(RESULTS);
+  const results = await getResults();
+  const ranking = getRanking(results);
   const row = ranking.find((r) => r.person === person)!;
 
   const drawnText =
@@ -76,7 +77,7 @@ export default function PersonPage({ params }: { params: { slug: string } }) {
         <p className="mb-4 text-sm text-ink-muted">
           El guanyador que va triar per a cada partit.
         </p>
-        <PredictionBracket person={person} />
+        <PredictionBracket person={person} results={results} />
       </section>
     </main>
   );
