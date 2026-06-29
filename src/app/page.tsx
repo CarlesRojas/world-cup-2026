@@ -1,6 +1,7 @@
 import RankingTable from "@/components/RankingTable";
 import RiskCarousel from "@/components/RiskCarousel";
 import ThemeToggle from "@/components/ThemeToggle";
+import Podium from "@/components/Podium";
 import type { MatchCardData } from "@/components/MatchCard";
 import { RESULTS } from "@/data/results";
 import { ROUND_LABEL, ROUND_POINTS, type Match } from "@/data/bracket";
@@ -69,6 +70,12 @@ export default function Home() {
           {decidedCount} / {ordered.length} partits jugats
         </p>
       </header>
+
+      {/* Podium — shown always for now to review the design; later we'll only
+          show it once every match is resolved (allResolved). */}
+      <section className="mx-auto mb-12 max-w-2xl px-5">
+        <Podium rows={ranking} />
+      </section>
 
       <section className="mx-auto mb-14 max-w-2xl px-5">
         <RankingTable rows={ranking} />

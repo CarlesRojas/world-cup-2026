@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { RankingRow } from "@/lib/scoring";
 import { slugify } from "@/lib/people";
 
@@ -14,6 +15,7 @@ type SortDir = "asc" | "desc";
  * The active column shows a chevron pointing the way it's sorted.
  */
 export default function RankingTable({ rows }: { rows: RankingRow[] }) {
+  const router = useRouter();
   const [sortBy, setSortBy] = useState<SortKey>("current");
   const [dir, setDir] = useState<SortDir>("desc");
 
@@ -66,18 +68,23 @@ export default function RankingTable({ rows }: { rows: RankingRow[] }) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((r, i) => (
+            {sorted.map((r) => (
               <tr
                 key={r.person}
-                className="border-t border-line last:border-b-0"
+                onClick={() => router.push(`/persona/${slugify(r.person)}`)}
+                className="cursor-pointer border-t border-line transition last:border-b-0 hover:bg-surface"
               >
                 <td className="py-3 pl-4 text-left tabular-nums text-ink-faint">
-                  {i + 1}
+                  {r.position}
                 </td>
                 <td className="py-3 px-2 font-medium">
                   <Link
                     href={`/persona/${slugify(r.person)}`}
-                    className="text-ink underline-offset-2 transition hover:underline"
+                    className={`underline-offset-2 transition hover:underline ${
+                      r.eliminated
+                        ? "text-rose-600 dark:text-rose-400"
+                        : "text-ink"
+                    }`}
                   >
                     {r.person}
                   </Link>

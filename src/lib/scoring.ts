@@ -175,23 +175,47 @@ export interface RankingRow {
   person: string;
   current: number;
   potential: number;
+  /** Standing by current points, ties shared (1,1,3,…). */
+  position: number;
+  /** How many OTHER people share this person's current score. */
+  tiedWith: number;
+  /**
+   * True when this person can no longer win: their best possible final score
+   * (potential) is already below someone's guaranteed score (current), so they
+   * can never finish on top.
+   */
+  eliminated: boolean;
 }
 
 /**
  * The full ranking, sorted by current points (desc), then potential points
  * (desc) as a tie-breaker, then name for stability.
+ *
+ * `position` uses standard competition ranking on current points, so everyone
+ * with the same current score shares the same position.
  */
 export function getRanking(results: Results): RankingRow[] {
-  return PEOPLE.map((person) => ({
+  const base = PEOPLE.map((person) => ({
     person,
     current: currentPoints(person, results),
     potential: potentialPoints(person, results),
-  })).sort(
-    (a, b) =>
-      b.current - a.current ||
-      b.potential - a.potential ||
-      a.person.localeCompare(a.person, "ca"),
-  );
+  }));
+  const maxCurrent = Math.max(0, ...base.map((r) => r.current));
+  return base
+    .map((r) => ({
+      ...r,
+      position: 1 + base.filter((o) => o.current > r.current).length,
+      tiedWith: base.filter(
+        (o) => o.person !== r.person && o.current === r.current,
+      ).length,
+      eliminated: r.potential < maxCurrent,
+    }))
+    .sort(
+      (a, b) =>
+        b.current - a.current ||
+        b.potential - a.potential ||
+        a.person.localeCompare(b.person, "ca"),
+    );
 }
 
 export interface RiskEntry {
