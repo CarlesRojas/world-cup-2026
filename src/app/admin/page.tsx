@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { MATCHES, ROUND_LABEL } from "@/data/bracket";
-import { matchParticipants } from "@/lib/scoring";
+import { ROUND_LABEL } from "@/data/bracket";
+import { matchParticipants, matchesByDate } from "@/lib/scoring";
 import { getResults, isDbConfigured } from "@/lib/db";
 import { Flag } from "@/components/TeamBadge";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -9,11 +9,22 @@ import { setResultAction } from "./actions";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Mundial a la Porra" };
 
+function formatKickoff(iso: string): string {
+  return new Intl.DateTimeFormat("ca-ES", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Madrid",
+  }).format(new Date(iso));
+}
+
 export default async function AdminPage() {
   const results = await getResults();
   const dbReady = isDbConfigured();
-  // Bracket order (by id) so rounds stay grouped.
-  const matches = [...MATCHES].sort((a, b) => a.id - b.id);
+  // Chronological order (by kickoff date and time), like the carousel.
+  const matches = matchesByDate();
 
   return (
     <main className="mx-auto max-w-2xl px-5 py-6 sm:py-10">
@@ -55,7 +66,7 @@ export default async function AdminPage() {
                 <span className="font-semibold text-ink">
                   {ROUND_LABEL[m.round]}
                 </span>
-                <span>Partit {m.id}</span>
+                <span>{formatKickoff(m.date)}</span>
               </div>
               <form action={setResultAction} className="flex flex-col gap-2">
                 <input type="hidden" name="matchId" value={m.id} />
